@@ -1,0 +1,96 @@
+```javascript
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Stat panel</title>
+  <script src="https://rawgit.com/HumbleSoftware/Flotr2/master/flotr2.min.js"></script>
+  <style>
+    #example {
+      width: 340px;
+      height: 150px;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="example"></div>
+  <script>
+    Flotr.addType('stat', {
+      options: {
+        show: false,
+        unit: null,
+        textStyle: 'fill',
+        title: 'Chart',
+        titleSize: 18,
+        titleAlign: 'center'
+      },
+
+      draw: function (options) {
+        const {
+          context, fontColor, data,
+          titleAlign, titleSize, title,
+          unit, fontSize, width, height, textStyle
+        } = options;
+
+        context.save();
+
+        context.textBaseline = 'middle';
+        context.textAlign = 'center';
+
+        this.drawTitle(context, titleAlign, titleSize, width, title);
+        this.drawValue(context, fontColor, fontSize, textStyle, data, unit, width, height);
+
+        context.restore();
+      },
+
+      drawTitle(context, titleAlign, titleSize, width, title) {
+        context.font = `${titleSize}px bold sans-serif`;
+
+        const metrics = context.measureText(title);
+        const titleY = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
+        let titleX;
+        switch (titleAlign) {
+          case 'right':
+            titleX = (metrics.width / 2) + 5;
+            break;
+          case 'center':
+            titleX = width / 2;
+            break;
+          case 'left':
+            titleX = width - metrics.width / 2 - 5;
+            break;
+        }
+        context.fillText(title, titleX, titleY);
+      },
+
+      drawValue(context, fontColor, fontSize, textStyle, data, unit, width, height) {
+        context.fillStyle = fontColor;
+        context.font = `${fontSize}px bold sans-serif`;
+        if (textStyle === 'fill') {
+          context.fillText(`${data}${unit ? ' ' + unit : ''}`, width / 2, height / 2);
+        } else {
+          context.strokeText(`${data}${unit ? ' ' + unit : ''}`, width / 2, height / 2);
+        }
+      }
+    });
+
+    (function basic(container) {
+      Flotr.draw(container, [40], {
+        fontSize: 90,
+        stat: {
+          show: true,
+          title: 'Yeboo!',
+          titleAlign: 'center'
+        },
+        xaxis: {
+          showLabels: true
+        }
+      });
+    })(document.getElementById("example"));
+  </script>
+</body>
+
+</html>
